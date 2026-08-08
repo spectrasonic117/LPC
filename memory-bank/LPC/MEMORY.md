@@ -9,7 +9,8 @@ Plugin de formato de chat para servidores Paper/Spigot 1.21.x (Java 21) integrad
 - [x] LSP limpio: 0 errores, 0 advertencias en `src/main/java`
 - [x] Permisos de comando movidos de plugin.yml a LPCCommand.java (CommandAPI los maneja): `lpc.reload`, `lpc.clearchat`, `lpc.debug`
 - [x] `lpc.minimessage` declarado en plugin.yml (antes faltaba)
-- [ ] PENDIENTE: `pom.xml` `<main.class>` apunta a `com.spectrasonic.lpc.LPC` pero la clase real es `Main` → el plugin NO arranca. Requiere aprobación del usuario para editar pom.xml (regla AGENTS.md).
+- [x] README.md documentado por completo (características, requisitos, instalación, configuración, permisos, comandos, arquitectura, stack técnico y notas). Está en español, coherente con el proyecto.
+- [ ] PENDIENTE (verificado): `pom.xml` `<main.class>` YA apunta correctamente a `com.spectrasonic.lpc.Main` — el problema del memory bank anterior estaba resuelto, no requiere edición.
 
 ## Arquitectura
 - `com.spectrasonic.lpc.Main` — clase principal (JavaPlugin, con Lombok @Getter)
@@ -31,8 +32,11 @@ Plugin de formato de chat para servidores Paper/Spigot 1.21.x (Java 21) integrad
 - Lambdas de `.executes` con tipos explícitos `(CommandSender, CommandArguments)` para evitar ambigüedad del compilador.
 - `plugin.yml` ya declara `depend: [LuckPerms, CommandAPI]` → no requiere inicialización manual de CommandAPI.
 - Permisos de feature de chat (`lpc.colorcodes`, `lpc.rgbcodes`, `lpc.minimessage`) SÍ quedan en plugin.yml porque los consulta `ChatManager.processMessage()` con `player.hasPermission(...)` — CommandAPI no puede manejarlos.
-- IMPORTANTE: los permisos de comando (reload/clear/debug) eran `default: op` en plugin.yml. Ahora, al ser manejados por CommandAPI sin declaración en plugin.yml, **no tienen default op**: solo podrán ejecutarlos quienes tengan el nodo otorgado (LuckPerms/admin). Si se quiere mantener default op habría que añadir `setop` o configurar en LuckPerms.
+- IMPORTANTE: los permisos de comando (reload/clear/debug) eran `default: op` en plugin.yml. Ahora, al ser manejados por CommandAPI sin declaración en plugin.yml, **no tienen default op**: solo podrán ejecutarlos quienes tengan el nodo otorgado (LuckPerms/admin). El comando raíz `/lpc` usa `CommandPermission.OP`.
+- ChatManager: `buildFormat()` resuelve `group-formats.<grupo>` o `chat-format`; reemplaza placeholders `{prefix}`, `{suffix}`, `{prefixes}`, `{suffixes}`, `{world}`, `{name}`, `{displayname}`, `{username-color}`, `{message-color}`; aplica PlaceholderAPI si está activo.
+- ListenerManager detecta Paper por `Class.forName("io.papermc.paper.event.player.AsyncChatEvent")` y registra PaperChatListener (renderer de Adventure) o ChatListener (mutación de event.message).
+- Main.onEnable: aborta y deshabilita el plugin si LuckPerms no está cargado; avisa en consola si detecta plugins de chat conflictivos (EssentialsChat, VentureChat, HeroChat, DeluxeChat, ChatManager, ChatEx, UltraChat, TownyChat).
 
 ## Pendientes / Observaciones
-- Confirmar con el usuario si se corrige `<main.class>` en pom.xml.
+- Confirmar con el usuario si quiere versión en inglés del README o badges de CI.
 - ColorUtils.java tenía 2 advertencias de raw type (`new HashMap()`) → corregidas con `new HashMap<>()`.
