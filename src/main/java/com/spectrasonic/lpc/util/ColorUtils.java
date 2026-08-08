@@ -43,22 +43,20 @@ public final class ColorUtils {
 	}
 
 	public static String serializeToMiniMessage(Component component) {
-		return (String) MINI_MESSAGE.serialize(component);
+		return MINI_MESSAGE.serialize(component);
 	}
 
 	public static Component legacyToMiniMessage(String legacy) {
 		if (legacy != null && !legacy.isEmpty()) {
-			String processed = translateHexColorCodes(legacy);
-			Component component = LEGACY_AMPERSAND.deserialize(processed);
-			return component;
+			return LEGACY_AMPERSAND.deserialize(translateHexColorCodes(legacy));
 		} else {
 			return Component.empty();
 		}
 	}
 
 	public static Component miniMessageToLegacy(String miniMessage) {
-		return (Component) (miniMessage != null && !miniMessage.isEmpty() ? MINI_MESSAGE.deserialize(miniMessage)
-				: Component.empty());
+		return miniMessage != null && !miniMessage.isEmpty() ? MINI_MESSAGE.deserialize(miniMessage)
+				: Component.empty();
 	}
 
 	public static String colorize(String message) {
@@ -69,7 +67,7 @@ public final class ColorUtils {
 				char c = message.charAt(i);
 				if (c == '&' && i + 1 < message.length()) {
 					char next = message.charAt(i + 1);
-					String miniMessage = (String) LEGACY_TO_MINIMESSAGE.get(Character.toLowerCase(next));
+					String miniMessage = LEGACY_TO_MINIMESSAGE.get(Character.toLowerCase(next));
 					if (miniMessage != null) {
 						result.append(miniMessage);
 						++i;
@@ -103,7 +101,7 @@ public final class ColorUtils {
 
 			while (bukkitHexMatcher.find()) {
 				String hex = bukkitHexMatcher.group().replace("&", "");
-				hexMatcher.appendReplacement(buffer, "<#" + hex.substring(1) + ">");
+				bukkitHexMatcher.appendReplacement(buffer, "<#" + hex.substring(1) + ">");
 			}
 
 			result = bukkitHexMatcher.appendTail(buffer).toString();
@@ -158,8 +156,8 @@ public final class ColorUtils {
 
 	public static Component namedColorToComponent(String colorName) {
 		if (colorName != null && !colorName.isEmpty()) {
-			NamedTextColor color = (NamedTextColor) NamedTextColor.NAMES.value(colorName.toLowerCase());
-			return (Component) (color != null ? Component.text("").color(color) : Component.text(""));
+			NamedTextColor color = NamedTextColor.NAMES.value(colorName.toLowerCase());
+			return color != null ? Component.text("").color(color) : Component.text("");
 		} else {
 			return Component.empty();
 		}

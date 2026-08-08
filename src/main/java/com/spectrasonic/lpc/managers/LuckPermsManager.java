@@ -1,21 +1,15 @@
 package com.spectrasonic.lpc.managers;
 
 import java.util.Map;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.cacheddata.CachedMetaData;
 import org.bukkit.entity.Player;
 
 @RequiredArgsConstructor
-@Getter
 public final class LuckPermsManager {
 
     private final LuckPerms luckPerms;
-
-    public boolean isInitialized() {
-        return luckPerms != null;
-    }
 
     public CachedMetaData getPlayerMetaData(Player player) {
         return luckPerms.getPlayerAdapter(Player.class).getMetaData(player);

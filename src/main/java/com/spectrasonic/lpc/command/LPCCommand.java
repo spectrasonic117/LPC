@@ -4,6 +4,7 @@ import com.spectrasonic.lpc.Main;
 import com.spectrasonic.lpc.managers.LuckPermsManager;
 import com.spectrasonic.lpc.util.ColorUtils;
 import dev.jorel.commandapi.CommandAPICommand;
+import dev.jorel.commandapi.CommandPermission;
 import dev.jorel.commandapi.arguments.EntitySelectorArgument;
 import dev.jorel.commandapi.executors.CommandArguments;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +13,6 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.luckperms.api.cacheddata.CachedMetaData;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import dev.jorel.commandapi.CommandPermission;
 
 @RequiredArgsConstructor
 public final class LPCCommand {

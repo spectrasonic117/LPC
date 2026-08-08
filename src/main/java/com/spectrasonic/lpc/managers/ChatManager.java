@@ -2,15 +2,12 @@ package com.spectrasonic.lpc.managers;
 
 import com.spectrasonic.lpc.Main;
 import com.spectrasonic.lpc.util.ColorUtils;
-import java.util.stream.Collectors;
-import lombok.Getter;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import me.clip.placeholderapi.PlaceholderAPI;
-import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 
 @RequiredArgsConstructor
-@Getter
 public final class ChatManager {
 
     private final Main plugin;
@@ -30,12 +27,10 @@ public final class ChatManager {
         String usernameColor = luckPermsManager.getMetaValue(player, "username-color");
         String messageColor = luckPermsManager.getMetaValue(player, "message-color");
 
-        String allPrefixes = luckPermsManager.getPrefixes(player).keySet().stream()
-                .map(key -> luckPermsManager.getPrefixes(player).get(key))
-                .collect(Collectors.joining());
-        String allSuffixes = luckPermsManager.getSuffixes(player).keySet().stream()
-                .map(key -> luckPermsManager.getSuffixes(player).get(key))
-                .collect(Collectors.joining());
+        Map<Integer, String> prefixes = luckPermsManager.getPrefixes(player);
+        Map<Integer, String> suffixes = luckPermsManager.getSuffixes(player);
+        String allPrefixes = String.join("", prefixes.values());
+        String allSuffixes = String.join("", suffixes.values());
 
         format = format.replace("{prefix}", prefix != null ? prefix : "")
                 .replace("{suffix}", suffix != null ? suffix : "")
@@ -52,7 +47,7 @@ public final class ChatManager {
             format = PlaceholderAPI.setPlaceholders(player, format);
         }
 
-        return ColorUtils.colorize(ColorUtils.translateHexColorCodes(format));
+        return ColorUtils.colorize(format);
     }
 
     public String processMessage(Player player, String message) {
@@ -69,33 +64,5 @@ public final class ChatManager {
             return hasRgbCodes ? ColorUtils.stripColorCodes(ColorUtils.translateHexColorCodes(message))
                     : ColorUtils.stripColorCodes(ColorUtils.stripHexCodes(message));
         }
-    }
-
-    public String colorize(String message) {
-        return ColorUtils.colorize(message);
-    }
-
-    public String translateHexColorCodes(String message) {
-        return ColorUtils.translateHexColorCodes(message);
-    }
-
-    public String stripColorCodes(String message) {
-        return ColorUtils.stripColorCodes(message);
-    }
-
-    public String stripHexCodes(String message) {
-        return ColorUtils.stripHexCodes(message);
-    }
-
-    public Component deserializeMessage(String message) {
-        return ColorUtils.deserialize(message);
-    }
-
-    public String serializeToLegacy(Component component) {
-        return ColorUtils.serializeToLegacy(component);
-    }
-
-    public String serializeToMiniMessage(Component component) {
-        return ColorUtils.serializeToMiniMessage(component);
     }
 }
