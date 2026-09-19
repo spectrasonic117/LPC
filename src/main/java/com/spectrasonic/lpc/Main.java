@@ -2,8 +2,12 @@ package com.spectrasonic.lpc;
 
 import com.spectrasonic.lpc.managers.ChatManager;
 import com.spectrasonic.lpc.managers.CommandManager;
+import com.spectrasonic.lpc.managers.ConfigManager;
 import com.spectrasonic.lpc.managers.ListenerManager;
 import com.spectrasonic.lpc.managers.LuckPermsManager;
+import com.spectrasonic.lpc.managers.MessageManager;
+import com.spectrasonic.lpc.util.MessageUtils;
+
 import java.util.List;
 import lombok.Getter;
 import net.luckperms.api.LuckPerms;
@@ -19,12 +23,21 @@ public final class Main extends JavaPlugin {
     private LuckPermsManager luckPermsManager;
     @Getter
     private ChatManager chatManager;
+    @Getter
+    private ConfigManager configManager;
+    @Getter
+    private MessageManager messageManager;
 
     private CommandManager commandManager;
     private ListenerManager listenerManager;
 
     @Override
     public void onEnable() {
+        // La configuración y los mensajes se cargan primero para tenerlos disponibles
+        // siempre
+        configManager = new ConfigManager(this);
+        messageManager = MessageManager.getInstance();
+
         LuckPerms luckPerms = getServer().getServicesManager().load(LuckPerms.class);
         if (luckPerms == null) {
             getLogger().severe("LuckPerms not found! LPC requires LuckPerms to function.");
@@ -37,11 +50,16 @@ public final class Main extends JavaPlugin {
         commandManager = new CommandManager(this);
         listenerManager = new ListenerManager(this, chatManager);
 
-        saveDefaultConfig();
         commandManager.registerCommands();
         listenerManager.registerListeners();
 
         warnAboutChatPlugins();
+
+        MessageUtils.sendStartupMessage(this);
+    }
+
+    public void onDisable() {
+        MessageUtils.sendShutdownMessage(this);
     }
 
     private void warnAboutChatPlugins() {

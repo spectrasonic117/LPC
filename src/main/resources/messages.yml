@@ -1,0 +1,46 @@
+# ============================================================
+#  LPC - Messages
+#  Todos los mensajes del plugin en formato MiniMessage
+#  Referencia: https://docs.advntr.dev/minimessage/format.html
+#
+#  Placeholders disponibles según la clave (entre <angle>):
+#  se resuelven automáticamente al enviar el mensaje.
+# ============================================================
+
+messages:
+  # Mensajes de recarga de configuración (/lpc reload)
+  reload:
+    success: "<green>La configuración de LPC ha sido recargada correctamente.</green>"
+    failed: "<red>No se pudo recargar la configuración de LPC.</red>"
+
+  # Mensajes relacionados con permisos
+  permission:
+    no_permission: "<red>No tienes permiso para usar este comando.</red>"
+
+  # Mensajes generales de comandos
+  command:
+    only_player: "<red>Solo los jugadores pueden usar este comando.</red>"
+
+  # Mensajes del chat (/lpc clear)
+  chat:
+    cleared: "<gray>El chat ha sido limpiado por un miembro del staff.</gray>"
+
+  # Mensajes del subcomando debug (/lpc debug <jugador>)
+  debug:
+    header: "<gold><b>LPC Debug</b></gold> <dark_gray>»</dark_gray> <white><player></white>"
+    primary_group: "<gray>Grupo principal: </gray><white><group></white>"
+    prefix: "<gray>Prefix: </gray>"
+    suffix: "<gray>Suffix: </gray>"
+    prefixes_header: "<gray>Prefixes (por peso):</gray>"
+    suffixes_header: "<gray>Suffixes (por peso):</gray>"
+    weight_entry: " <dark_gray>[<weight>]</dark_gray> "
+    none: "<red>ninguno</red>"
+    username_color: "<gray>Username-color: </gray><white><value></white>"
+    message_color: "<gray>Message-color: </gray><white><value></white>"
+    group_format: "<gray>Formato de grupo: </gray><white><format></white>"
+    papi: "<gray>PlaceholderAPI: </gray>"
+    papi_hooked: "<green>conectado</green>"
+    papi_not_found: "<red>no encontrado</red>"
+    permission_line: "<gray>Permiso <white><permission></white>: </gray>"
+    permission_yes: "<green>sí</green>"
+    permission_no: "<red>no</red>"

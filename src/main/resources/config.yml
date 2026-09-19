@@ -39,6 +39,5 @@ chat-format: "{prefix}{name}&r: {message}"
 group-formats:
 #  default: "{prefix}{name}&r: {message}"
 #  admin: "&c[Admin] {prefix}{name}&r: {message}"
-
-# Message shown after /lpc clear
-clear-chat-message: "&7El Chat Ha sido Limpiado"
+#
+# Los mensajes del plugin (clear, reload, debug, etc.) viven en messages.yml
