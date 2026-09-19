@@ -11,6 +11,7 @@ import com.spectrasonic.lpc.util.MessageUtils;
 import java.util.List;
 import lombok.Getter;
 import net.luckperms.api.LuckPerms;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Main extends JavaPlugin {
@@ -38,14 +39,18 @@ public final class Main extends JavaPlugin {
         configManager = new ConfigManager(this);
         messageManager = MessageManager.getInstance();
 
-        LuckPerms luckPerms = getServer().getServicesManager().load(LuckPerms.class);
-        if (luckPerms == null) {
+        // Se usa getRegistration en lugar de load: load() es @Nullable pero
+        // algunos analizadores lo infieren como @NotNull y marcan el chequeo
+        // de null como Dead Code. getRegistration es @Nullable explícito.
+        RegisteredServiceProvider<LuckPerms> luckPermsProvider = getServer().getServicesManager()
+                .getRegistration(LuckPerms.class);
+        if (luckPermsProvider == null) {
             getLogger().severe("LuckPerms not found! LPC requires LuckPerms to function.");
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
 
-        luckPermsManager = new LuckPermsManager(luckPerms);
+        luckPermsManager = new LuckPermsManager(luckPermsProvider.getProvider());
         chatManager = new ChatManager(this, luckPermsManager);
         commandManager = new CommandManager(this);
         listenerManager = new ListenerManager(this, chatManager);

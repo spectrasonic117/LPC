@@ -19,6 +19,7 @@ Plugin de formato de chat para servidores Paper/Spigot 1.21.x (Java 21) integrad
 - [x] Permisos de comando en LPCCommand.java (CommandAPI): `lpc.reload`, `lpc.clearchat`, `lpc.debug`
 - [x] `lpc.minimessage` declarado en plugin.yml
 - [x] README.md documentado por completo
+- [x] Dead Code en Main.java ln 44 corregido: `ServicesManager.load()` reemplazado por `getRegistration()` (patrón oficial de la wiki de LuckPerms); eliminados `@SuppressWarnings("ConstantConditions")` y `//noinspection`; LSP limpio tras el cambio
 
 ## Arquitectura
 - `com.spectrasonic.lpc.Main` — clase principal (JavaPlugin, Lombok @Getter); expone `getConfigManager()`, `getMessageManager()`, `getChatManager()`, `getLuckPermsManager()`
@@ -46,6 +47,7 @@ Plugin de formato de chat para servidores Paper/Spigot 1.21.x (Java 21) integrad
 - Mensajes por defecto en español (coherente con el mensaje original de clear-chat).
 - ChatManager: `buildFormat()` resuelve `group-formats.<grupo>` o `chat-format`; ListenerManager detecta Paper vía AsyncChatEvent.
 - Main.onEnable: ConfigManager se crea PRIMERO (config + messages disponibles siempre), luego el check de LuckPerms que deshabilita el plugin si falta.
+- Integración LuckPerms vía `ServicesManager.getRegistration(LuckPerms.class)` (no `load()`): `getRegistration` es `@Nullable` explícito en paper-api 26.1.2 y es el patrón de la wiki oficial de LuckPerms, así ningún analizador marca el chequeo de null como Dead Code; el `disablePlugin + return` defensivo se conserva aunque `plugin.yml` ya declara `depend: [LuckPerms]`.
 
 ## Pendientes / Observaciones
 - Confirmar con el usuario si quiere versión en inglés del README o badges de CI.
