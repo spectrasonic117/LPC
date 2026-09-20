@@ -24,6 +24,8 @@ public final class ColorUtils {
 	}
 
 	public static Component deserialize(String text) {
+		// Se normaliza § a & para aceptar prefijos de LuckPerms y textos en ambos formatos
+		text = normalizeSection(text);
 		if (text != null && !text.isEmpty()) {
 			if (containsMiniMessage(text)) {
 				return MINI_MESSAGE.deserialize(text);
@@ -36,6 +38,20 @@ public final class ColorUtils {
 		} else {
 			return Component.empty();
 		}
+	}
+
+	// Variante tolerante: si el texto del jugador rompe el parseo MiniMessage se usa el texto plano
+	public static Component deserializeSafe(String text, String fallbackPlain) {
+		try {
+			return deserialize(text);
+		} catch (Exception ignored) {
+			return Component.text(fallbackPlain != null ? fallbackPlain : "");
+		}
+	}
+
+	// Convierte el símbolo legacy § al formato & que entiende el resto de la clase
+	public static String normalizeSection(String text) {
+		return text != null ? text.replace('§', '&') : null;
 	}
 
 	public static String serializeToLegacy(Component component) {
@@ -60,6 +76,7 @@ public final class ColorUtils {
 	}
 
 	public static String colorize(String message) {
+		message = normalizeSection(message);
 		if (message != null && !message.isEmpty()) {
 			StringBuilder result = new StringBuilder();
 
@@ -112,10 +129,12 @@ public final class ColorUtils {
 	}
 
 	public static String stripColorCodes(String message) {
+		message = normalizeSection(message);
 		return message != null && !message.isEmpty() ? message.replaceAll("&[0-9a-fA-Fk-oK-OrR]", "") : message;
 	}
 
 	public static String stripHexCodes(String message) {
+		message = normalizeSection(message);
 		if (message != null && !message.isEmpty()) {
 			String result = message.replaceAll("&#[0-9a-fA-F]{6}", "");
 			result = result.replaceAll("&x(&[0-9a-fA-F]){6}", "");
@@ -138,7 +157,7 @@ public final class ColorUtils {
 	}
 
 	public static boolean containsLegacy(String text) {
-		return text != null && LEGACY_PATTERN.matcher(text).find();
+		return text != null && LEGACY_PATTERN.matcher(normalizeSection(text)).find();
 	}
 
 	public static boolean containsAnyColor(String text) {

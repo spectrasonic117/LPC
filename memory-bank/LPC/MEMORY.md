@@ -53,3 +53,12 @@ Plugin de formato de chat para servidores Paper/Spigot 1.21.x (Java 21) integrad
 - Confirmar con el usuario si quiere versión en inglés del README o badges de CI.
 - Pendiente: `/lpc` no valida `only_player` porque todos los subcomandos aceptan CommandSender (correcto); `MessageUtils.onlyPlayerMessage()` disponible para futuros subcomandos player-only.
 - El README aún no documenta messages.yml (solo config.yml) — candidata a actualización de documentación.
+
+## Fix formato de chat (2026-09-20)
+- Causa del chat vanilla: mezcla de formatos § / & / MiniMessage (`legacySection` en el listener vs `&` en `processMessage`/`colorize`), inyección del texto del jugador en la plantilla MiniMessage (cualquier `<` inválido lanzaba excepción y Paper caía al formato vanilla) y `{displayname}`/prefijos con § que nadie convertía.
+- `ColorUtils`: nuevo `normalizeSection()` (§ → &) aplicado en `deserialize`, `colorize`, `strip*` y `containsLegacy`; nuevo `deserializeSafe(text, fallback)` tolerante a errores de parseo.
+- `ChatManager.buildFormat()`: `{displayname}` ahora se serializa a MiniMessage (antes legacy §) y el formato se normaliza antes de `colorize`.
+- `ChatManager.processMessage()`: normaliza § → & y filtra tags MiniMessage si el jugador no tiene `lpc.minimessage`.
+- `PaperChatListener`: lee el mensaje con `PlainTextComponentSerializer`, divide el formato en antes/después de `{message}` y deserializa cada parte por separado; try/catch con log para no fallar en silencio.
+- `ChatListener` (Spigot): convierte mensaje y formato a legacy § correctamente con `%2$s` en la posición de `{message}`.
+- `MessageManager.loadMessages()`: eliminado el `Files.copy(REPLACE_EXISTING)` que sobrescribía el messages.yml del usuario en cada arranque.

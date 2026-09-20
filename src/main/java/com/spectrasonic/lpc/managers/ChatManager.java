@@ -38,10 +38,12 @@ public final class ChatManager {
                 .replace("{suffixes}", allSuffixes)
                 .replace("{world}", player.getWorld().getName())
                 .replace("{name}", player.getName())
-                .replace("{displayname}", ColorUtils.serializeToLegacy(player.displayName()))
+                .replace("{displayname}", ColorUtils.serializeToMiniMessage(player.displayName()))
                 .replace("{username-color}", usernameColor != null ? usernameColor : "")
                 .replace("{message-color}", messageColor != null ? messageColor : "");
 
+        // Se normaliza § a & para que colorize/deserialize acepten prefijos legacy de LuckPerms
+        format = ColorUtils.normalizeSection(format);
         format = ColorUtils.translateHexColorCodes(format);
         if (plugin.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             format = PlaceholderAPI.setPlaceholders(player, format);
@@ -51,9 +53,15 @@ public final class ChatManager {
     }
 
     public String processMessage(Player player, String message) {
+        // Se normaliza § a & para procesar el texto en un único formato
+        message = ColorUtils.normalizeSection(message);
         boolean hasMiniMessage = player.hasPermission("lpc.minimessage");
         boolean hasColorCodes = player.hasPermission("lpc.colorcodes");
         boolean hasRgbCodes = player.hasPermission("lpc.rgbcodes");
+        // Sin permiso de MiniMessage se filtran los tags para evitar uso sin permiso e inyecciones
+        if (!hasMiniMessage) {
+            message = ColorUtils.stripMiniMessageTags(message);
+        }
         if (hasMiniMessage && ColorUtils.containsMiniMessage(message)) {
             return message;
         } else if (hasColorCodes && hasRgbCodes) {

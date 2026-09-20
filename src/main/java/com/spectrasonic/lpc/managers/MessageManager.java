@@ -2,10 +2,6 @@ package com.spectrasonic.lpc.managers;
 
 import com.spectrasonic.lpc.Main;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -64,20 +60,12 @@ public final class MessageManager {
         return MiniMessage.miniMessage().deserialize(getMessage(key, replacements));
     }
 
-    // Copia messages.yml desde el jar si no existe y carga la configuración
+    // Copia messages.yml desde el jar solo si no existe y carga la configuración
     public void loadMessages() {
         messagesFile = new File(plugin.getDataFolder(), "messages.yml");
 
         if (!messagesFile.exists()) {
             plugin.saveResource("messages.yml", false);
-        }
-
-        try (InputStream inputStream = plugin.getResource("messages.yml")) {
-            if (inputStream != null) {
-                Files.copy(inputStream, messagesFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-            }
-        } catch (IOException e) {
-            plugin.getLogger().severe("Could not save messages.yml: " + e.getMessage());
         }
 
         messagesConfig = YamlConfiguration.loadConfiguration(messagesFile);
